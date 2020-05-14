@@ -82,12 +82,25 @@ class Skyline:
         return (mul_x_pos, mul_heights*N, mul_width*N)
     
     
+    
+    def sm_calculate_width(self, x_pos_mn, x_pos_mx):
+        times = x_pos_mx - x_pos_mn
+        sp_width = [1.0] * times
+        sp_width.append(-0.5)
+        return sp_width
+    
+    
+    def sm_modify_heights(self, l_heights, i, j, s_height):
+        while i < j:
+            if(s_height > l_heights[i]):
+                l_heights[i] = s_height
+            i += 1
+        return l_heights
+
     #*********
     #Suma una skyline
-    #esta funcion esta hecha para unos valores individuales del skyline nuevo
-    #NO para un caso en el que tengo dos variables de sky y las quiero unir...
-    #ojo....
-def sumar_skyline(self, s_xmin, s_height, s_xmax):
+
+    def sumar_skyline(self, s_xmin, s_height, s_xmax):
         sum_x_pos = []
         sum_heights = []
         sum_width = []
@@ -96,10 +109,7 @@ def sumar_skyline(self, s_xmin, s_height, s_xmax):
         if((s_xmin < self.xmin and s_xmax < self.xmin) or (s_xmin > self.xmax and s_xmax > self.xmax)):
             #datos individuales
             sp_height = [s_height] * ((s_xmax-s_xmin)+1)
-            times = s_xmax - s_xmin
-            sp_width = [1.0] * times
-            sp_width.append(-0.5)
-            #sp_x_pos = list(range(s_xmin, s_xmax+1)
+            sp_width = self.sm_calculate_width(s_xmin,s_xmax)
             
             #left add
             if(s_xmin < self.xmin and s_xmax < self.xmin):
@@ -127,15 +137,9 @@ def sumar_skyline(self, s_xmin, s_height, s_xmax):
             print("in add")
             sum_x_pos = self.get_x_pos()
             i = sum_x_pos.index(s_xmin)
-            while i < sum_x_pos.index(s_xmax):
-                print(i, sum_x_pos.index(s_xmax))
-                if(s_height > sum_heights[i]):
-                    sum_heights[i] = s_height
-                i += 1
-
-            times = len(sum_x_pos) - 1
-            sum_width = [1.0] * times
-            sum_width.append(-0.5)
+            j = sum_x_pos.index(s_xmax)
+            sum_heights = sm_modify_heights(self, sum_heights, i, j, s_height)
+            sum_width = self.sm_calculate_width(sum_x_pos[0],sum_x_pos[-1])
 
         #solo uno adentro
         elif((s_xmin < self.xmin and s_xmax <= self.xmax) or (s_xmin >= self.xmin and s_xmax > self.xmax)):
@@ -148,11 +152,8 @@ def sumar_skyline(self, s_xmin, s_height, s_xmax):
                 sum_heights = zero + sum_heights
                 print("left add")
                 i = sum_x_pos.index(s_xmin)
-                while i <= sum_x_pos.index(s_xmax):
-                    print(i, sum_x_pos.index(s_xmax))
-                    if(s_height > sum_heights[i]):
-                        sum_heights[i] = s_height
-                    i += 1
+                j = sum_x_pos.index(s_xmax)
+                sum_heights = sm_modify_heights(self, sum_heights, i, j+1, s_height)
 
             else:
                 print("right add")
@@ -160,17 +161,11 @@ def sumar_skyline(self, s_xmin, s_height, s_xmax):
                 s_fill = len(sum_x_pos) - len(sum_heights)
                 zero = [0] * s_fill            
                 sum_heights = sum_heights + zero
-                
                 i = sum_x_pos.index(s_xmin)
-                while i <= sum_x_pos.index(s_xmax):
-                    print(i, sum_x_pos.index(s_xmax))
-                    if(s_height > sum_heights[i]):
-                        sum_heights[i] = s_height
-                    i += 1
+                j = sum_x_pos.index(s_xmax)
+                sum_heights = sm_modify_heights(self, sum_heights, i, j+1, s_height)
 
-            times = len(sum_x_pos) - 1
-            sum_width = [1.0] * times
-            sum_width.append(-0.5)
+            sum_width = self.sm_calculate_width(sum_x_pos[0],sum_x_pos[-1])
 
         return (sum_x_pos, sum_heights, sum_width)
     
