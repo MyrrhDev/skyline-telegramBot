@@ -1,3 +1,5 @@
+import random
+
 class Skyline:
     #variables donde se asignan edificios
     area = 0
@@ -85,7 +87,7 @@ class Skyline:
     #esta funcion esta hecha para unos valores individuales del skyline nuevo
     #NO para un caso en el que tengo dos variables de sky y las quiero unir...
     #ojo....
-    def sumar_skyline(self, s_xmin, s_height, s_xmax):
+def sumar_skyline(self, s_xmin, s_height, s_xmax):
         sum_x_pos = []
         sum_heights = []
         sum_width = []
@@ -117,10 +119,62 @@ class Skyline:
                 
                 sum_x_pos = list(range(self.xmin, s_xmax+1))
                 sum_heights = self.get_height() + sp_cero_fill + sp_height 
-                sum_width = self.get_width() + sp_cero_fill + sp_width 
+                sum_width = self.get_width() + sp_cero_fill + sp_width
         
+        #completamente adentro
+        elif (s_xmin >= self.xmin and s_xmax <= self.xmax):
+            sum_heights = self.get_height()
+            print("in add")
+            sum_x_pos = self.get_x_pos()
+            i = sum_x_pos.index(s_xmin)
+            while i < sum_x_pos.index(s_xmax):
+                print(i, sum_x_pos.index(s_xmax))
+                if(s_height > sum_heights[i]):
+                    sum_heights[i] = s_height
+                i += 1
+
+            times = len(sum_x_pos) - 1
+            sum_width = [1.0] * times
+            sum_width.append(-0.5)
+
+        #solo uno adentro
+        elif((s_xmin < self.xmin and s_xmax <= self.xmax) or (s_xmin >= self.xmin and s_xmax > self.xmax)):
+            sum_heights = self.get_height()
+            if((s_xmin < self.xmin) and (s_xmax <= self.xmax)):
+                #left add
+                sum_x_pos = list(range(s_xmin, self.xmax+1))
+                s_fill = len(sum_x_pos) - len(sum_heights)
+                zero = [0] * s_fill            
+                sum_heights = zero + sum_heights
+                print("left add")
+                i = sum_x_pos.index(s_xmin)
+                while i <= sum_x_pos.index(s_xmax):
+                    print(i, sum_x_pos.index(s_xmax))
+                    if(s_height > sum_heights[i]):
+                        sum_heights[i] = s_height
+                    i += 1
+
+            else:
+                print("right add")
+                sum_x_pos = list(range(self.xmin, s_xmax+1))
+                s_fill = len(sum_x_pos) - len(sum_heights)
+                zero = [0] * s_fill            
+                sum_heights = sum_heights + zero
+                
+                i = sum_x_pos.index(s_xmin)
+                while i <= sum_x_pos.index(s_xmax):
+                    print(i, sum_x_pos.index(s_xmax))
+                    if(s_height > sum_heights[i]):
+                        sum_heights[i] = s_height
+                    i += 1
+
+            times = len(sum_x_pos) - 1
+            sum_width = [1.0] * times
+            sum_width.append(-0.5)
+
         return (sum_x_pos, sum_heights, sum_width)
     
+    #Crea un skyline de la informacion de lists
     def c_skyline(self, c_x_pos, c_heights, c_width):
         self.xmin = c_x_pos[0]
         self.height = c_heights
@@ -129,57 +183,7 @@ class Skyline:
         self.max_height = max(c_heights)
         self.width = c_width
 
-    def sumar_inter_skyline(self, s_xmin, s_height, s_xmax):
-        sum_x_pos = []
-        sum_heights = []
-        sum_width = []
-        
-        sum_heights = self.get_height()
-        
-        if((s_xmin < self.xmin) and (s_xmax <= self.xmax)):
-            #left add
-            sum_x_pos = list(range(s_xmin, self.xmax+1))
-            s_fill = len(sum_x_pos) - len(sum_heights)
-            zero = [0] * s_fill            
-            sum_heights = zero + sum_heights
-            print("left add")
-            i = sum_x_pos.index(s_xmin)
-            while i <= sum_x_pos.index(s_xmax):
-                print(i, sum_x_pos.index(s_xmax))
-                if(s_height > sum_heights[i]):
-                    sum_heights[i] = s_height
-                i += 1
-        elif((s_xmin >= self.xmin) and (s_xmax <= self.xmax)):
-            print("in add")
-            sum_x_pos = self.get_x_pos()
-            i = sum_x_pos.index(s_xmin)
-            while i < sum_x_pos.index(s_xmax):
-                print(i, sum_x_pos.index(s_xmax))
-                if(s_height > sum_heights[i]):
-                    sum_heights[i] = s_height
-                i += 1   
-        else:
-            print("right add")
-            sum_x_pos = list(range(self.xmin, s_xmax+1))
-            s_fill = len(sum_x_pos) - len(sum_heights)
-            zero = [0] * s_fill            
-            sum_heights = sum_heights + zero
-            
-            i = sum_x_pos.index(s_xmin)
-            while i <= sum_x_pos.index(s_xmax):
-                print(i, sum_x_pos.index(s_xmax))
-                if(s_height > sum_heights[i]):
-                    sum_heights[i] = s_height
-                i += 1
-            
-        #dealing with width
-        times = len(sum_x_pos) - 1
-        sum_width = [1.0] * times
-        sum_width.append(-0.5)
-        
-        return (sum_x_pos, sum_heights, sum_width)
-    
-    
+   
     def inter_skyline(self, s_xmin, s_height, s_xmax):
         sum_x_pos = []
         sum_heights = []
@@ -230,6 +234,64 @@ class Skyline:
         
         return (r_x_pos, reflect_heights, r_width)
         
+    
+    # n - numero de edificios creados
+    # h - una altura de 0 a h aleatoria
+    # w - una width de 1 a w aleatoria
+    # xmin, xmax - una posicion de inicio/final entre xmin, xmax
+    def random_skylines(self, n, h, w, xmin, xmax):
+        #creamos un primero
+        rd_x_pos = []
+        rd_heights_list = []
+        width_array = []
+        
+        rd_xmin = random.randint(xmin, xmax-1)
+        rd_xmax = random.randint(rd_xmin+1, xmax)
+        rd_x_pos = list(range(rd_xmin, rd_xmax+1))     
+        print(rd_x_pos)
+        rd_height = random.randint(0, h)
+        print("height: ", rd_height)
+        rd_heights_list = [rd_height] * ((rd_xmax-rd_xmin)+1)
+        print(((rd_xmin-rd_xmax)+1))
+        print(rd_heights_list)
+        rd_width = random.randint(1, w)
+        times = rd_xmax - rd_xmin
+        width_array = [rd_width] * times
+        width_array.append(-0.5)
+        print(width_array)
+        
+        
+        i = 0
+        while i < n:
+            rd_xmin = random.randint(xmin, xmax-1)
+            rd_xmax = random.randint(rd_xmin+1, xmax)
+            
+            rd_height = random.randint(0, h)
+            
+            rd_width = random.randint(1, w)
+            
+            (rd_x_pos, rd_heights_list, width_array) = self.
+            
+            times = rd_xmax - rd_xmin
+            width_array = [rd_width] * times
+            width_array.append(-0.5)
+            print(width_array)
+            i += 1
+            
+        return (rd_x_pos, rd_heights_list, width_array)
+        
+        
+        #luego sumarlos todos con union uno por uno.
+    
+    
+    def calculate_width():
+        i = sum_x_pos.index(s_xmin)
+        while i <= sum_x_pos.index(s_xmax):
+            print(i, sum_x_pos.index(s_xmax))
+            if(s_height > sum_heights[i]):
+                sum_heights[i] = s_height
+            i += 1
+    
     
     #recalcular el area???
     def calcula_area():
