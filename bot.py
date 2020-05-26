@@ -1,61 +1,170 @@
-# importa l'API de Telegram
-from telegram.ext import Updater, CommandHandler
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 
 import pickle
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator
 import skyline as sk
 
-identificadores = []
+import random
+import os
+
+import sys
+from antlr4 import *
+from cl.SkylineLexer import SkylineLexer
+from cl.SkylineParser import SkylineParser
+from cl.EvalVisitor import EvalVisitor
 
 
-# defineix una funció que saluda i que s'executarà quan el bot rebi el missatge /start
+# define una función que saluda y que se ejecutará cuando el bot reciba el mensaje/start
 def start(update, context):
-    context.bot.send_message(chat_id=update.effective_chat.id, text="SkylineBot! Buenas!")
-    
+    context.bot.send_message(chat_id=update.effective_chat.id, text="SkylineBot! Hola!")
+
+
+# escribe el nombre completo del autor del proyecto y su correo electrónico oficial de la facultad.
 def author(update, context):
-    context.bot.send_message(chat_id=update.effective_chat.id, text="Mayra Pastor Valdivia mayra.pastor@est.fib.upc.edu")
+    context.bot.send_message(chat_id=update.effective_chat.id,
+                             text="Mayra Pastor Valdivia mayra.pastor@est.fib.upc.edu")
 
+# contestar con una lista de todas las posibles pedidos y una breve documentación sobre su propósito y uso.
 def help_person(update, context):
-    context.bot.send_message(chat_id=update.effective_chat.id, text="Tengo los comandos: /start, /help, /lst, /clean , /save id , /load id")
+    context.bot.send_message(chat_id=update.effective_chat.id,
+                             text="Tengo los comandos: /start, /help, /lst, /clean , /save id , /load id")
 
-#Voy a tener que guardarme los identificadores (variables) en un dicc y print aqui y en el sig. borrar
-#mostra els identificadors definits i la seva corresponent àrea.
+
+# muestra los identificadores definidos y su correspondiente área.
 def lst(update, context):
-    context.bot.send_message(chat_id=update.effective_chat.id, text="Hola! Mi creadora es @ Mayra Pastor Valdivia")
+    print('lst')
+    identifier_dict = context.user_data['ts']
+    m_areas = ""
+    for key, value in identifier_dict.items():
+        m_areas = m_areas + key + ': area ' + str(value.get_area()) + '\n'
+    # Si no hay ningun identificador en la ts
+    if m_areas == "":
+        m_areas = "No hay identificadores"
+    context.bot.send_message(chat_id=update.effective_chat.id, text=m_areas)
 
-#esborra tots els identificadors definits.
+
+# borra todos los identificadores definidos.
 def clean_this(update, context):
-    context.bot.send_message(chat_id=update.effective_chat.id, text="Hola! Mi creadora es @ Mayra Pastor Valdivia")
+    print('clean')
+    context.user_data['ts'].clear()
+    context.bot.send_message(chat_id=update.effective_chat.id, text="Los identificadores han sido borrados")
 
-#/save id: ha de guardar un skyline definit amb el nom id.sky.
+
+# /save id: debe guardar un skyline definido con el nombre id.sky.
+# TODO: id = args ?????
 def save_id(update, context):
-    context.bot.send_message(chat_id=update.effective_chat.id, text="Hola! Mi creadora es @ Mayra Pastor Valdivia")
+    print('saving')
+    print(context.args[0], type(context.args[0]))
+    # recoger el Skyline de la ts
+    sky_save = sk.find_symbol(context.args[0], context.user_data['ts'])
+    # Si no existe:
+    if sky_save is None:
+        context.bot.send_message(chat_id=update.effective_chat.id, text="El id no existe, intentalo de nuevo")
+    sk.save_sky(sky_save, context.args[0])
+    context.bot.send_message(chat_id=update.effective_chat.id, text="El skyline ha sido guardado")
 
-#/load id: ha de carregar un skyline de l’arxiu id.sky.
+
+# /load id: debe cargar un skyline del archivo id.sky.
 def load_id(update, context):
-    context.bot.send_message(chat_id=update.effective_chat.id, text="Hola! Mi creadora es @ Mayra Pastor Valdivia")
+    print('loading')
+    print(context.args[0], type(context.args[0]))
+    try:
+        new_sky = sk.load_sky(context.args[0])
+    except (OSError, IOError) as e:
+        context.bot.send_message(chat_id=update.effective_chat.id, text="No hay un archivo de ese nombre")
+    # Si existe, (sobre)excribo en:
+    sk.update_symbols(context.args[0], context.user_data['ts'], new_sky)
+    context.bot.send_message(chat_id=update.effective_chat.id, text="Se ha cargado el archivo en la tabla de simbolos")
 
-# declara una constant amb el access token que llegeix de token.txt
+
+def draw_graph(update, context, skyline):
+    print('drawing graph')
+    m_file = "%d.png" % random.randint(1000000, 9999999)
+    ax = plt.figure().gca()
+    ax.yaxis.set_major_locator(MaxNLocator(integer=True))
+    ax.xaxis.set_major_locator(MaxNLocator(integer=True))
+
+    # height = [2]
+    # width = [1.0,1.0,-0.5]
+    # x_pos = [1,2,3]
+
+    print('info: ', skyline.get_x_pos(), skyline.get_height(), skyline.get_width() )
+
+    plt.bar(skyline.get_x_pos(), skyline.get_height(), width=skyline.get_width(), align='edge')
+    plt.savefig(m_file, bbox_inches='tight')
+    context.bot.send_photo(chat_id=update.effective_chat.id, photo=open(m_file, 'rb'))
+    os.remove(m_file)
+
+
+def user_operation(update, context):
+    try:
+
+        # Crear nuevo skyline
+        # if (xmin >= xmax):
+        #    context.bot.send_message(chat_id=update.effective_chat.id, text="El minimo ha de ser menor que el maximo")
+        #    raise TypeError("xmin >= xmax")
+        # elif(height <= 0):
+        #    context.bot.send_message(chat_id=update.effective_chat.id, text="El minimo ha de ser menor que el maximo")
+        #    raise TypeError("height <= 0")
+
+        # TODO: donde guardo los nombres de asignacion de las skylines?
+        # guardar skyline
+        # sky = sk.Skyline(xmin,height,xmax)
+        # guardar en permanencia
+        # ....
+
+        # skylines compuestos:
+        # puedo hacer un loop y asignando a un skyline object,
+        # [(xmin, alçada, xmax), ...] ...[(1, 2, 3), (3, 4, 6)]
+        # i = 0
+        # while i < len(lista_skyline):
+        #    par_sk = lista_skyline[i]  #(xmin, alçada, xmax)
+        #    temp_sk = sk.Skyline()
+        # text = update.message.text
+
+        # print(len(context.user_data['ts']))
+        if not 'ts' in context.user_data:
+            context.user_data['ts'] = dict()
+
+        print('1')
+        input_stream = InputStream(update.message.text)
+        lexer = SkylineLexer(input_stream)
+        token_stream = CommonTokenStream(lexer)
+        parser = SkylineParser(token_stream)
+        tree = parser.root()
+        # y luego usas una instancia de EvalVisitor para seguir...
+        print('2')
+        visitor = EvalVisitor(context.user_data['ts'])
+        # donde context.user_data['ts'] es la tabla de símbolos
+        # que el bot guarda para el usuario en cuestión...
+        print('3')
+        # m_output tendrá el skyline a plotear
+        m_output = visitor.visit(tree)
+        draw_graph(update, context, m_output)
+        # I visitor NO es el skyline,
+        # el skyline será el resultado de  visitor.visit(tree)
+    except Exception as e:
+        print('Its going down: ')
+        print(e)
+        context.bot.send_message(chat_id=update.effective_chat.id, text='💣Nope')
+
+
 TOKEN = open('token.txt').read().strip()
-
-# crea objectes per treballar amb Telegram
 updater = Updater(token=TOKEN, use_context=True)
 dispatcher = updater.dispatcher
 
-
-
-
-
-
-# indica que quan el bot rebi la comanda /start s'executi la funció start
 dispatcher.add_handler(CommandHandler('start', start))
 dispatcher.add_handler(CommandHandler('author', author))
 dispatcher.add_handler(CommandHandler('help', help_person))
 dispatcher.add_handler(CommandHandler('lst', lst))
 dispatcher.add_handler(CommandHandler('clean', clean_this))
-dispatcher.add_handler(CommandHandler('save id', save_id))
-dispatcher.add_handler(CommandHandler('load id', load_id))
+# pass_args=True porque sera el 'id' ...pero acabo de leer que ya no es necesario y siempre se pasa todo y se puede usar.
+dispatcher.add_handler(CommandHandler('save', save_id))
+dispatcher.add_handler(CommandHandler('load', load_id))
+
+# draw_graphs es la funcion
+dispatcher.add_handler(MessageHandler(Filters.text, user_operation))
 
 # engega el bot
 updater.start_polling()
