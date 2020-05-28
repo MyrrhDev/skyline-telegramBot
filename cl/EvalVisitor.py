@@ -64,17 +64,20 @@ class EvalVisitor(SkylineVisitor):
 
     # Visit a parse tree produced by SkylineParser#parentesisExp.
     def visitParentesisExp(self, ctx: SkylineParser.ParentesisExpContext):
-        return self.visitChildren(ctx)
+        # return self.visitChildren(ctx)
+        l = [n for n in ctx.getChildren()]
+        return self.visit(l[1])
 
     # Visit a parse tree produced by SkylineParser#multExp.
     def visitMultExp(self, ctx: SkylineParser.MultExpContext):
         print('multiplicar')
         l = [n for n in ctx.getChildren()]
         m_sky = self.visit(l[0])
-        print(int(l[2].getText()))
+        num = m_sky.height[-1] * int(l[2].getText())
+        print(int(l[2].getText()), " * ", num)
         (mult_sky_x, mult_sky_h, mult_sky_w) = m_sky.multiply_N(int(l[2].getText()))
         mult_skl = sk(0,0,0)
-        mult_skl.c_skyline(mult_sky_x, mult_sky_h, mult_sky_w, True)
+        mult_skl.c_skyline(mult_sky_x, mult_sky_h, mult_sky_w, num)
         return mult_skl
 
     # Visit a parse tree produced by SkylineParser#leftExp.
