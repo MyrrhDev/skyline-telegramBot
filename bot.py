@@ -17,6 +17,8 @@ from cl.EvalVisitor import EvalVisitor
 
 # define una función que saluda y que se ejecutará cuando el bot reciba el mensaje/start
 def start(update, context):
+    if not 'ts' in context.user_data:
+        context.user_data['ts'] = dict()
     context.bot.send_message(chat_id=update.effective_chat.id, text="SkylineBot! Hola!")
 
 
@@ -25,10 +27,19 @@ def author(update, context):
     context.bot.send_message(chat_id=update.effective_chat.id,
                              text="Mayra Pastor Valdivia mayra.pastor@est.fib.upc.edu")
 
+
 # contestar con una lista de todas las posibles pedidos y una breve documentación sobre su propósito y uso.
 def help_person(update, context):
+    text = """Los comandos disponibles son: \n
+    /author: escribe el nombre completo del autor del proyecto y su correo electrónico oficial de la facultad.\n
+    /start: Inicia la conversacion con el bot\n
+    /help: Información sobre los comandos\n
+    /lst: muestra los identificadores definidos y su correspondiente área.\n
+    /clean: borra todos los identificadores definidos.\n
+    /save id: guarda un skyline definido con el nombre id.sky.\n
+    /load id: carga un skyline del archivo id.sky."""
     context.bot.send_message(chat_id=update.effective_chat.id,
-                             text="Tengo los comandos: /start, /help, /lst, /clean , /save id , /load id")
+                             text=text)
 
 
 # muestra los identificadores definidos y su correspondiente área.
@@ -52,7 +63,6 @@ def clean_this(update, context):
 
 
 # /save id: debe guardar un skyline definido con el nombre id.sky.
-# TODO: id = args ?????
 def save_id(update, context):
     print('saving')
     print(context.args[0], type(context.args[0]))
@@ -84,22 +94,18 @@ def draw_graph(update, context, skyline):
     ax = plt.figure().gca()
     ax.yaxis.set_major_locator(MaxNLocator(integer=True))
     ax.xaxis.set_major_locator(MaxNLocator(integer=True))
-
-    # height = [2]
-    # width = [1.0,1.0,-0.5]
-    # x_pos = [1,2,3]
-
-    print('info: ', skyline.get_x_pos(), skyline.get_height(), skyline.get_width() )
+    # print('info: ', skyline.get_x_pos(), skyline.get_height(), skyline.get_width() )
 
     plt.bar(skyline.get_x_pos(), skyline.get_height(), width=skyline.get_width(), align='edge')
     plt.savefig(m_file, bbox_inches='tight')
     context.bot.send_photo(chat_id=update.effective_chat.id, photo=open(m_file, 'rb'))
     os.remove(m_file)
+    text = "area: " + str(skyline.get_area()) + "\n" + "altura: " + str(skyline.get_max_height())
+    context.bot.send_message(chat_id=update.effective_chat.id, text=text)
 
 
 def user_operation(update, context):
     try:
-
         # Crear nuevo skyline
         # if (xmin >= xmax):
         #    context.bot.send_message(chat_id=update.effective_chat.id, text="El minimo ha de ser menor que el maximo")
@@ -107,12 +113,6 @@ def user_operation(update, context):
         # elif(height <= 0):
         #    context.bot.send_message(chat_id=update.effective_chat.id, text="El minimo ha de ser menor que el maximo")
         #    raise TypeError("height <= 0")
-
-        # TODO: donde guardo los nombres de asignacion de las skylines?
-        # guardar skyline
-        # sky = sk.Skyline(xmin,height,xmax)
-        # guardar en permanencia
-        # ....
 
         # skylines compuestos:
         # puedo hacer un loop y asignando a un skyline object,
@@ -124,8 +124,8 @@ def user_operation(update, context):
         # text = update.message.text
 
         # print(len(context.user_data['ts']))
-        if not 'ts' in context.user_data:
-            context.user_data['ts'] = dict()
+        # if not 'ts' in context.user_data:
+        #    context.user_data['ts'] = dict()
 
         print('1')
         input_stream = InputStream(update.message.text)
@@ -142,12 +142,11 @@ def user_operation(update, context):
         # m_output tendrá el skyline a plotear
         m_output = visitor.visit(tree)
         draw_graph(update, context, m_output)
-        # I visitor NO es el skyline,
-        # el skyline será el resultado de  visitor.visit(tree)
+
     except Exception as e:
         print('Its going down: ')
-        print(e)
-        context.bot.send_message(chat_id=update.effective_chat.id, text='💣Nope')
+        print(e, type(e))
+        context.bot.send_message(chat_id=update.effective_chat.id, text=str(e))
 
 
 TOKEN = open('token.txt').read().strip()
