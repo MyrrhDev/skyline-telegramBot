@@ -10,7 +10,7 @@ else:
     from cl.SkylineVisitor import SkylineVisitor
 
 from skyline import Skyline as sk
-
+import copy
 
 # This class defines a complete generic visitor for a parse tree produced by SkylineParser.
 
@@ -54,9 +54,13 @@ class EvalVisitor(SkylineVisitor):
 
     # Visit a parse tree produced by SkylineParser#rightExp.
     def visitRightExp(self, ctx: SkylineParser.RightExpContext):
+        print('right')
         l = [n for n in ctx.getChildren()]
         m_sky = self.visit(l[0])
-        return m_sky.move_right((int(l[2].getText())))
+        r_sky = copy.deepcopy(m_sky)
+        r_sky.move_right(int(l[2].getText()))
+        print(r_sky.get_x_pos(), int(l[2].getText()))
+        return r_sky
 
     # Visit a parse tree produced by SkylineParser#parentesisExp.
     def visitParentesisExp(self, ctx: SkylineParser.ParentesisExpContext):
@@ -64,44 +68,51 @@ class EvalVisitor(SkylineVisitor):
 
     # Visit a parse tree produced by SkylineParser#multExp.
     def visitMultExp(self, ctx: SkylineParser.MultExpContext):
+        print('multiplicar')
         l = [n for n in ctx.getChildren()]
         m_sky = self.visit(l[0])
         print(int(l[2].getText()))
         (mult_sky_x, mult_sky_h, mult_sky_w) = m_sky.multiply_N(int(l[2].getText()))
         mult_skl = sk(0,0,0)
-        mult_skl.c_skyline(mult_sky_x, mult_sky_h, mult_sky_w)
+        mult_skl.c_skyline(mult_sky_x, mult_sky_h, mult_sky_w, True)
         return mult_skl
 
     # Visit a parse tree produced by SkylineParser#leftExp.
     def visitLeftExp(self, ctx: SkylineParser.LeftExpContext):
+        print('left')
         l = [n for n in ctx.getChildren()]
         m_sky = self.visit(l[0])
-        return m_sky.move_left((int(l[2].getText())))
+        l_sky = copy.deepcopy(m_sky)
+        l_sky.move_left((int(l[2].getText())))
+        return l_sky
 
     # Visit a parse tree produced by SkylineParser#unionExp.
     # TODO: Igual necesitare cambiar esto para la construccion aleatoria
     #  de skylines con "width"
     def visitUnionExp(self, ctx: SkylineParser.UnionExpContext):
+        print('union')
         l = [n for n in ctx.getChildren()]
         m_sky = self.visit(l[0])
         n_sky = self.visit(l[2])
-        (sm_x_pos, sm_heights, sm_width) = m_sky.sumar_skyline(n_sky.xmin, n_sky.height[0], n_sky.xmax)
+        (sm_x_pos, sm_heights, sm_width) = m_sky.sumar_skyline(n_sky.xmin, n_sky.height, n_sky.xmax)
         union_skl = sk(0,0,0)
         union_skl.c_skyline(sm_x_pos, sm_heights, sm_width)
         return union_skl
 
     # Visit a parse tree produced by SkylineParser#interExp.
     def visitInterExp(self, ctx: SkylineParser.InterExpContext):
+        print('interseccion')
         l = [n for n in ctx.getChildren()]
         f_sky = self.visit(l[0])
         s_sky = self.visit(l[2])
-        (sm_x_pos, sm_heights, sm_width) = f_sky.inter_skyline(s_sky.xmin, s_sky.height[0], s_sky.xmax)
+        (sm_x_pos, sm_heights, sm_width) = f_sky.inter_skyline(s_sky.xmin, s_sky.height, s_sky.xmax)
         inter_skl = sk(0,0,0)
         inter_skl.c_skyline(sm_x_pos, sm_heights, sm_width)
         return inter_skl
 
     # Visit a parse tree produced by SkylineParser#reflectExp.
     def visitReflectExp(self, ctx: SkylineParser.ReflectExpContext):
+        print('reflect')
         l = [n for n in ctx.getChildren()]
         # visita l[1] para obtener el id o sky
         sky = self.visit(l[1])
@@ -133,4 +144,8 @@ class EvalVisitor(SkylineVisitor):
         print('visitCrea')
         l = [n for n in ctx.getChildren()]
         if len(l) == 7:
+            if int(l[1].getText()) >= int(l[5].getText()):
+                raise Exception("Max no puede ser menor que Min")
+            if 0 >= int(l[3].getText()):
+                raise Exception("La altura del Skyline no puede ser negativa")
             return sk(int(l[1].getText()), int(l[3].getText()), int(l[5].getText()))
