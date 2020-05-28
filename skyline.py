@@ -17,6 +17,7 @@ class Skyline:
         self.xmin = xmin
         self.height = [height] * ((xmax - xmin) + 1)
         self.xmax = xmax
+        self.x_pos = list(range(xmin, xmax + 1))
         self.area = sum(self.height[:-1])
         #self.area = (xmax - xmin) * height
         self.max_height = height
@@ -32,10 +33,7 @@ class Skyline:
     # Devuelve una lista para hacer el plot de las posicion en el eje x
     # e.g. [1, 2, 3]
     def get_x_pos(self):
-        if len(self.x_pos) == 0:
-            return list(range(self.xmin, self.xmax + 1))
-        else:
-            return self.x_pos
+        return self.x_pos
 
     def get_width(self):
         return self.width
@@ -74,14 +72,18 @@ class Skyline:
     def move_right(self, num):
         self.xmin = self.xmin + num
         self.xmax = self.xmax + num
+        self.x_pos = [x+num for x in self.x_pos]
+        #self.x_pos = list(range(self.xmin, self.xmax + 1))
+        print(self.x_pos)
 
     # Mover el skyline a la izquierda
     # Verificar que xmin no se coniverta en NEGATIVO!!! (??)
     # igual antes de mandarloa  eso....asi que en bot.py
     # aqui confiamos
-    def move_left(self, N):
-        self.xmin -= N
-        self.xmax -= N
+    def move_left(self, num):
+        self.xmin = self.xmin - num
+        self.xmax = self.xmax - num
+        self.x_pos = [x-num for x in self.x_pos]
 
     # replicacion del mismo skyline
     def multiply_N(self, N):
@@ -98,7 +100,7 @@ class Skyline:
             m_max = m_max + size - 1
             mul_x_pos += list(range(m_min, m_max + 1))
 
-        # mul_area = self.get_area() * N
+        print('multiply: ', mul_x_pos, " ", mul_heights * N, " ", mul_width * N)
         return mul_x_pos, mul_heights * N, mul_width * N
 
     def sm_calculate_width(self, x_pos_mn, x_pos_mx, s_width):
@@ -228,15 +230,15 @@ class Skyline:
         return sum_x_pos, sum_heights, sum_width
 
     # Crea un skyline de la informacion de lists
-    def c_skyline(self, c_x_pos, c_heights, c_width, mult = False):
+    def c_skyline(self, c_x_pos, c_heights, c_width, m_num = -1):
         self.xmin = c_x_pos[0]
         self.height = c_heights
         self.xmax = c_x_pos[-1]
         self.x_pos = c_x_pos
         print(c_heights)
 #         self.area = sum(c_heights[:-1])
-        if mult == True:
-            self.area = sum(c_heights[:-2])
+        if m_num > -1:
+            self.area = sum(c_heights) - m_num
         else:
             self.area = sum(c_heights[:-1])
 

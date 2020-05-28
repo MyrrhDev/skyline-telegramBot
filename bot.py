@@ -94,7 +94,7 @@ def draw_graph(update, context, skyline):
     ax = plt.figure().gca()
     ax.yaxis.set_major_locator(MaxNLocator(integer=True))
     ax.xaxis.set_major_locator(MaxNLocator(integer=True))
-    # print('info: ', skyline.get_x_pos(), skyline.get_height(), skyline.get_width() )
+    print('info: ', skyline.get_x_pos(), skyline.get_height(), skyline.get_width() )
 
     plt.bar(skyline.get_x_pos(), skyline.get_height(), width=skyline.get_width(), align='edge')
     plt.savefig(m_file, bbox_inches='tight')
