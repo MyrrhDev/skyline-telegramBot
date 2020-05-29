@@ -14,8 +14,10 @@ expr: '(' expr ')' #parentesisExp
 | expr '-' NUM #leftExp
 ;
 
-sky: ID | crea ;
+sky: ID | crea | multcrea | aleatorio;
 crea: '(' ( NUM (',' NUM)* )? ')';
+multcrea: '[' ( crea (',' crea)* )? ']';
+aleatorio: '{' NUM',' NUM',' NUM','NUM',' NUM'}';
 
 NUM : (DIGIT)+ ;
 DIGIT : '0'..'9';

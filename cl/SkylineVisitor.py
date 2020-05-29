@@ -59,5 +59,13 @@ class SkylineVisitor(ParseTreeVisitor):
     def visitCrea(self, ctx: SkylineParser.CreaContext):
         return self.visitChildren(ctx)
 
+    # Visit a parse tree produced by SkylineParser#multcrea.
+    def visitMultcrea(self, ctx: SkylineParser.MultcreaContext):
+        return self.visitChildren(ctx)
+
+    # Visit a parse tree produced by SkylineParser#aleatorio.
+    def visitAleatorio(self, ctx: SkylineParser.AleatorioContext):
+        return self.visitChildren(ctx)
+
 
 del SkylineParser
