@@ -19,7 +19,7 @@ class Skyline:
         self.xmax = xmax
         self.x_pos = list(range(xmin, xmax + 1))
         self.area = sum(self.height[:-1])
-        #self.area = (xmax - xmin) * height
+        # self.area = (xmax - xmin) * height
         self.max_height = height
         times = self.xmax - self.xmin
         width_array = [1.0] * times
@@ -72,8 +72,8 @@ class Skyline:
     def move_right(self, num):
         self.xmin = self.xmin + num
         self.xmax = self.xmax + num
-        self.x_pos = [x+num for x in self.x_pos]
-        #self.x_pos = list(range(self.xmin, self.xmax + 1))
+        self.x_pos = [x + num for x in self.x_pos]
+        # self.x_pos = list(range(self.xmin, self.xmax + 1))
         print(self.x_pos)
 
     # Mover el skyline a la izquierda
@@ -83,7 +83,7 @@ class Skyline:
     def move_left(self, num):
         self.xmin = self.xmin - num
         self.xmax = self.xmax - num
-        self.x_pos = [x-num for x in self.x_pos]
+        self.x_pos = [x - num for x in self.x_pos]
 
     # replicacion del mismo skyline
     def multiply_N(self, N):
@@ -230,15 +230,17 @@ class Skyline:
         return sum_x_pos, sum_heights, sum_width
 
     # Crea un skyline de la informacion de lists
-    def c_skyline(self, c_x_pos, c_heights, c_width, m_num = -1):
+    def c_skyline(self, c_x_pos, c_heights, c_width, m_num=-1, area=-1):
         self.xmin = c_x_pos[0]
         self.height = c_heights
         self.xmax = c_x_pos[-1]
         self.x_pos = c_x_pos
         print(c_heights)
-#         self.area = sum(c_heights[:-1])
+        #         self.area = sum(c_heights[:-1])
         if m_num > -1:
             self.area = sum(c_heights) - m_num
+        elif area > -1:
+            self.area = area
         else:
             self.area = sum(c_heights[:-1])
 
@@ -295,7 +297,7 @@ class Skyline:
                 sum_heights[x] = s_height[x]
             x += 1
 
-        return (sum_x_pos, sum_heights, sum_width)
+        return sum_x_pos, sum_heights, sum_width
 
     def reflect_skyline(self):
         # cambia heights
@@ -309,7 +311,7 @@ class Skyline:
         r_width = self.get_width().copy()
         r_x_pos = self.get_x_pos().copy()
 
-        return (r_x_pos, reflect_heights, r_width)
+        return r_x_pos, reflect_heights, r_width
 
     # n - numero de edificios creados
     # h - una altura de 0 a h aleatoria
@@ -353,4 +355,3 @@ class Skyline:
 
     # recalcular el area
     # def calcula_area(self, c_heights, c_x_pos):
-

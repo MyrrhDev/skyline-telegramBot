@@ -122,7 +122,7 @@ class EvalVisitor(SkylineVisitor):
         # y luego devuelve ese skyline reflected
         (r_x_pos, r_heights, r_width) = sky.reflect_skyline()
         reflect_skl = sk(0,0,0)
-        reflect_skl.c_skyline(r_x_pos, r_heights, r_width)
+        reflect_skl.c_skyline(r_x_pos, r_heights, r_width, -1, sky.area)
         return reflect_skl
 
     # Visit a parse tree produced by SkylineParser#sky.
