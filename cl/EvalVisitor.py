@@ -12,6 +12,7 @@ else:
 from skyline import Skyline as sk
 import copy
 
+
 # This class defines a complete generic visitor for a parse tree produced by SkylineParser.
 
 class EvalVisitor(SkylineVisitor):
@@ -75,10 +76,8 @@ class EvalVisitor(SkylineVisitor):
         m_sky = self.visit(l[0])
         num = m_sky.height[-1] * int(l[2].getText())
         print(int(l[2].getText()), " * ", num)
-        (mult_sky_x, mult_sky_h, mult_sky_w) = m_sky.multiply_N(int(l[2].getText()))
-        mult_skl = sk(0,0,0)
-        mult_skl.c_skyline(mult_sky_x, mult_sky_h, mult_sky_w, num)
-        return mult_skl
+        mult_sky = m_sky.multiply_N(int(l[2].getText()), num)
+        return mult_sky
 
     # Visit a parse tree produced by SkylineParser#leftExp.
     def visitLeftExp(self, ctx: SkylineParser.LeftExpContext):
@@ -97,9 +96,7 @@ class EvalVisitor(SkylineVisitor):
         l = [n for n in ctx.getChildren()]
         m_sky = self.visit(l[0])
         n_sky = self.visit(l[2])
-        (sm_x_pos, sm_heights, sm_width) = m_sky.sumar_skyline(n_sky.xmin, n_sky.height, n_sky.xmax)
-        union_skl = sk(0,0,0)
-        union_skl.c_skyline(sm_x_pos, sm_heights, sm_width)
+        union_skl = m_sky.sumar_skyline(n_sky)
         return union_skl
 
     # Visit a parse tree produced by SkylineParser#interExp.
@@ -108,10 +105,8 @@ class EvalVisitor(SkylineVisitor):
         l = [n for n in ctx.getChildren()]
         f_sky = self.visit(l[0])
         s_sky = self.visit(l[2])
-        (sm_x_pos, sm_heights, sm_width) = f_sky.inter_skyline(s_sky.xmin, s_sky.height, s_sky.xmax)
-        inter_skl = sk(0,0,0)
-        inter_skl.c_skyline(sm_x_pos, sm_heights, sm_width)
-        return inter_skl
+        inter_sky = f_sky.inter_skyline(s_sky)
+        return inter_sky
 
     # Visit a parse tree produced by SkylineParser#reflectExp.
     def visitReflectExp(self, ctx: SkylineParser.ReflectExpContext):
@@ -120,9 +115,7 @@ class EvalVisitor(SkylineVisitor):
         # visita l[1] para obtener el id o sky
         sky = self.visit(l[1])
         # y luego devuelve ese skyline reflected
-        (r_x_pos, r_heights, r_width) = sky.reflect_skyline()
-        reflect_skl = sk(0,0,0)
-        reflect_skl.c_skyline(r_x_pos, r_heights, r_width, -1, sky.area)
+        reflect_skl = sky.reflect_skyline(sky.area)
         return reflect_skl
 
     # Visit a parse tree produced by SkylineParser#sky.
@@ -136,6 +129,8 @@ class EvalVisitor(SkylineVisitor):
             get_id = l[0].getText()  # "d"
             print(get_id)
             get_sky = sk.find_symbol(get_id, self.user_data)
+            if get_sky is None:
+                raise Exception("El Skyline con id: " + get_id + " no esta en la tabla de simbolos")
             return get_sky
         # visitamos crea
         else:
@@ -149,6 +144,34 @@ class EvalVisitor(SkylineVisitor):
         if len(l) == 7:
             if int(l[1].getText()) >= int(l[5].getText()):
                 raise Exception("Max no puede ser menor que Min")
-            if 0 >= int(l[3].getText()):
+            if 0 > int(l[3].getText()):
                 raise Exception("La altura del Skyline no puede ser negativa")
             return sk(int(l[1].getText()), int(l[3].getText()), int(l[5].getText()))
+
+    # Visit a parse tree produced by SkylineParser#multcrea.
+    def visitMultcrea(self, ctx: SkylineParser.MultcreaContext):
+        print('visitMulti crea')
+        l = [n for n in ctx.getChildren()]
+        result_sky = sk(0, 0, 0)
+        for i, val in enumerate(l):
+            if i % 2 != 0:
+                # se le añade a result_sky
+                c_sky = self.visit(l[i])
+                result_sky = c_sky.sumar_skyline(result_sky)
+        return result_sky
+
+    # Visit a parse tree produced by SkylineParser#aleatorio.
+    def visitAleatorio(self, ctx: SkylineParser.AleatorioContext):
+        l = [n for n in ctx.getChildren()]
+        if 0 > int(l[1].getText()):
+            raise Exception("El numero a crear de skylines no puede ser negativo")
+        if 0 > int(l[3].getText()):
+            raise Exception("La altura del Skyline no puede ser negativa")
+        if 0 > int(l[5].getText()):
+            raise Exception("El width no puede ser menor que 1")
+        if int(l[7].getText()) >= int(l[9].getText()):
+            raise Exception("Max no puede ser menor que Min")
+        alea_sky = sk(0, 0, 0)
+        alea_sky = alea_sky.random_skylines(int(l[1].getText()), int(l[3].getText()), int(l[5].getText()),
+                                            int(l[7].getText()), int(l[9].getText()))
+        return alea_sky
