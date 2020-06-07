@@ -15,7 +15,7 @@ expr: '(' expr ')' #parentesisExp
 ;
 
 sky: ID | crea | multcrea | aleatorio;
-crea: '(' ( NUM (',' NUM)* )? ')';
+crea: '(' NUM ',' NUM ',' NUM ')';
 multcrea: '[' ( crea (',' crea)* )? ']';
 aleatorio: '{' NUM',' NUM',' NUM','NUM',' NUM'}';
 
