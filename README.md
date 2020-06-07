@@ -72,7 +72,7 @@ And then open up Telegram
 
 You need to add the bot to your telegram account by going to:
 
-[skylineBot](t.me/lp_skylineBot)
+[skylineBot](https://t.me/lp_skylineBot)
 
 ## Bot commands
 
