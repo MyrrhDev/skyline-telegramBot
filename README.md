@@ -22,9 +22,6 @@ Open the Terminal program. This is usually found under Utilities or Accessories.
 ```
 pip install virtualenv
 
-```
-
-```
 virtualenv mynewenvironment
 
 ```
@@ -44,7 +41,6 @@ mynewenvironment\Scripts\activate
 When you're done you can just deactivate the environment using the following command:
 ```
 deactivate
-
 ```
 
 ### Installing
@@ -66,7 +62,7 @@ To run this bot, you need to run:
 python3 bot.py
 ```
 
-And then open up Telegram
+And then open up Telegram.
 
 ## Testing the bot
 
@@ -172,25 +168,6 @@ e:= (1,2,3) + (2,6,5) + (4,3,10)
 f:= (((-( [(1,2,3) ,(2,6,5) , (4,3,10)] *2)) + 4) * b) * 2
 ```
 ![commands](/outputs/skycom11.png)
-
-
-## Bot commands
-
-* /start: start the conversation with the Bot.
-* /help: the Bot shows you a list of all possible commands and brief information of their purpose and use.
-* /author: the Bot writes the full name of the author of the project and his official e-mail of the faculty.
-* /lst: shows you the defined identifiers and their corresponding area.
-* /clean: clears all defined identifiers.
-* /save id: must save a skyline defined with the name id.sky.
-* /load id: must upload a skyline from the id.sky file.
-
-
-### Some command examples
-
-The commands /start , /author, and /help:
-
-![commands](/outputs/commands1.jpg)
-
 
 
 ## Libraries used:
