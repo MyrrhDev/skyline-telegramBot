@@ -30,7 +30,6 @@ class EvalVisitor(SkylineVisitor):
         l = [n for n in ctx.getChildren()]
         # ID
         id = l[0].getText()
-
         # sky: para guardar en la ts
         # y se devuelve sky para hacer el plot en bot.py
         if len(l) == 3:
@@ -61,7 +60,7 @@ class EvalVisitor(SkylineVisitor):
         l = [n for n in ctx.getChildren()]
         m_sky = self.visit(l[0])
         num = m_sky.height[-1] * int(l[2].getText())
-        mult_sky = m_sky.multiply_N(int(l[2].getText()), num)
+        mult_sky = m_sky.multiply_n(int(l[2].getText()), num)
         return mult_sky
 
     # Visit a parse tree produced by SkylineParser#leftExp.
@@ -141,7 +140,7 @@ class EvalVisitor(SkylineVisitor):
             raise Exception("El width no puede ser menor que 1")
         if int(l[7].getText()) >= int(l[9].getText()):
             raise Exception("Max no puede ser menor que Min")
-        # alea_sky = sk(0, 0, 0)
+
         alea_sky = sk.random_skylines(int(l[1].getText()), int(l[3].getText()), int(l[5].getText()),
                                             int(l[7].getText()), int(l[9].getText()))
         return alea_sky

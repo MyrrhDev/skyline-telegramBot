@@ -93,39 +93,36 @@ The commands /start , /author, and /help:
 Here are some unit tests done to test the functionality of this bot according to the specification and the graphic result of it.
 
 Some basic examples:
-
 ```
 a := (1,2,3)
 
 ```
 ![commands](/outputs/skybasic1.png)
-
 ```
 a := a + (3,4,6)
 
 ```
 ![commands](/outputs/skybasic2.png)
-
 ```
 a := a * 3
 
 ```
 ![commands](/outputs/skybasic3.png)
-
-
 ```
 -a
 
 ```
 ![commands](/outputs/skybasic4.png)
-
-
 ```
 [(1, 2, 3), (3, 4, 6)]
 
 ```
 ![commands](/outputs/skybasic5.png)
+```
+{30,20,3,1,20}
 
+```
+![commands](/outputs/skybasic61.png)
 
 ```
 {100000,20,3,1,10000}
@@ -138,36 +135,42 @@ A bit more complex cases:
 
 ```
 e:= (1,2,3) + (2,6,5) + (4,3,10)
-
 ```
 ![commands](/outputs/skycom7.png)
-
 
 ```
 ((-(e*2)) + 4) * (18,3,25)
 
 ```
 ![commands](/outputs/skycom8.png)
-
-
 ```
+b := - (((4,2,8) + 3) -2) * 4
 ((((-(e*2)) + 4) * b) * 2) - 8
-
 ```
 ![commands](/outputs/skycom9.png)
-
-
 ```
 (-(((((-(e*2)) + 4) * b) * 2)) - 8) + 4
-
 ```
 ![commands](/outputs/skycom10.png)
 
+Multiple skylines in a formula:
 
 ```
 f:= (((-( [(1,2,3) ,(2,6,5) , (4,3,10)] *2)) + 4) * b) * 2
+f * {30,20,3,1,20}
 ```
 ![commands](/outputs/skycom11.png)
+
+Random skylines in a formula:
+
+```
+g:= (((-( {30,20,3,1,20} *2)) + 4) * b) * 2
+```
+![commands](/outputs/skycom12.png)
+
+
+
+
 
 
 ## Libraries used:
