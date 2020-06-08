@@ -17,7 +17,6 @@ import copy
 
 class EvalVisitor(SkylineVisitor):
     def __init__(self, user_data):
-        print('init')
         self.user_data = user_data
 
     # Visit a parse tree produced by SkylineParser#root.
@@ -31,7 +30,6 @@ class EvalVisitor(SkylineVisitor):
         # ID
         id = l[0].getText()
         # sky: para guardar en la ts
-        # y se devuelve sky para hacer el plot en bot.py
         if len(l) == 3:
             sky = self.visit(l[2])
             self.user_data = sk.update_symbols(id, self.user_data, sky)

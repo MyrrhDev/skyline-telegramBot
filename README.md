@@ -81,12 +81,17 @@ You need to add the bot to your telegram account by going to:
 * /load id: must upload a skyline from the id.sky file.
 
 
-### Some command examples
+### Some /command examples
 
 The commands /start , /author, and /help:
 
 ![commands](/outputs/commands1.png)
 
+The commands /save id_skyline, /load id_skyline:
+![commands](/outputs/commands2.png)
+![commands](/outputs/commands3.png)
+
+As an example of save and load id, I'm including a.sky and b.sky as two Skyline files created.
 
 ### Some examples of Skylines
 
@@ -122,7 +127,7 @@ a := a * 3
 {30,20,3,1,20}
 
 ```
-![commands](/outputs/skybasic61.png)
+![commands](/outputs/skybasic6.png)
 
 ```
 {100000,20,3,1,10000}
