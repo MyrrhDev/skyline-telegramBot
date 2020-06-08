@@ -1,5 +1,7 @@
 # Generated from Skyline.g4 by ANTLR 4.7.2
 from antlr4 import *
+from skyline import Skyline as sk
+import copy
 
 if __name__ is not None and "." in __name__:
     from .SkylineParser import SkylineParser
@@ -8,9 +10,6 @@ if __name__ is not None and "." in __name__:
 else:
     from cl.SkylineParser import SkylineParser
     from cl.SkylineVisitor import SkylineVisitor
-
-from skyline import Skyline as sk
-import copy
 
 
 # This class defines a complete generic visitor for a parse tree produced by SkylineParser.
@@ -140,5 +139,5 @@ class EvalVisitor(SkylineVisitor):
             raise Exception("Max no puede ser menor que Min")
 
         alea_sky = sk.random_skylines(int(l[1].getText()), int(l[3].getText()), int(l[5].getText()),
-                                            int(l[7].getText()), int(l[9].getText()))
+                                      int(l[7].getText()), int(l[9].getText()))
         return alea_sky

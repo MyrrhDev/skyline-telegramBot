@@ -30,7 +30,7 @@ def author(update, context):
 
 # contestar con una lista de todas las posibles pedidos y una breve documentación sobre su propósito y uso.
 def help_person(update, context):
-    text = """Los comandos disponibles son: \n
+    text = """Los comandos disponibles son:\n
     /start: Inicia la conversacion con el bot\n
     /author: escribe el nombre completo del autor del proyecto y su correo electrónico oficial de la facultad.\n    
     /lst: muestra los identificadores definidos y su correspondiente área.\n
@@ -79,7 +79,7 @@ def save_id(update, context):
 
 # /load id: debe cargar un skyline del archivo id.sky.
 def load_id(update, context):
-    up_sky = sk(0,0,0)
+    up_sky = sk(0, 0, 0)
     try:
         with open(context.args[0] + '.sky', 'rb') as n_sky:
             up_sky = pickle.load(n_sky)
