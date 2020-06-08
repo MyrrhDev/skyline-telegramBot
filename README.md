@@ -87,11 +87,13 @@ The commands /start , /author, and /help:
 
 ![commands](/outputs/commands1.png)
 
-The commands /save id_skyline, /load id_skyline:
+The commands /save id_skyline:
 ![commands](/outputs/commands2.png)
+
+and /load id_skyline:
 ![commands](/outputs/commands3.png)
 
-As an example of save and load id, I'm including a.sky and b.sky as two Skyline files created.
+As an example of save and load id, I'm including a.sky and grace.sky as two Skyline files created.
 
 ### Some examples of Skylines
 
